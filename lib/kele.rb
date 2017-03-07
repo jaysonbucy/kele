@@ -4,10 +4,12 @@ require 'pry'
 
 require_relative 'unauthorized'
 require_relative 'roadmap'
+require_relative 'message'
 
 class Kele
   include HTTParty
   include Roadmap
+  include Message
 
   def initialize(email, password)
     response = self.class.post(api_url("sessions"), body: { email: email, password: password })
@@ -25,25 +27,15 @@ class Kele
     @mentor_availability = JSON.parse(response.body)
   end
 
-  def get_messages(page=nil)
-    if page == nil
-      response = self.class.get(api_url("message_threads"), headers: { "authorization" => @auth_token })
-    else
-      response = self.class.get(api_url("message_threads?page=#{page}"), headers: { "authorization" => @auth_token })
-    end
-    @messages = JSON.parse(response.body)
-  end
-
-  def create_message(sender, recipient_id, token, subject, stripped_text)
-    response = self.class.post(api_url("messages"),
+  def create_submission(assignment_branch, assignment_comment_link, checkpoint_id, comment, enrollment_id)
+    response = self.class.post(api_url("checkpoint_submissions"),
     body: {
-      sender: sender,
-      recipient_id: recipient_id,
-      token: token,
-      subject: subject,
-      stripped_text: stripped_text
-    },
-    headers: { "authorization" => @auth_token })
+      assignment_branch: assignment_branch,
+      assignment_comment_link: assignment_comment_link,
+      checkpoint_id: checkpoint_id,
+      comment: comment,
+      enrollment_id: enrollment_id
+      }, headers: { "authorization" => @auth_token })
   end
 
   private
