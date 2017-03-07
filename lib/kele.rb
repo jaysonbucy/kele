@@ -3,9 +3,11 @@ require 'json'
 require 'pry'
 
 require_relative 'unauthorized'
+require_relative 'roadmap'
 
 class Kele
   include HTTParty
+  include Roadmap
 
   def initialize(email, password)
     response = self.class.post(api_url("sessions"), body: { email: email, password: password })
